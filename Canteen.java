@@ -4,7 +4,7 @@ public class Canteen {
    public static void main(String[] args) {
        Scanner input = new Scanner(System.in);
        MenuItems items = new MenuItems();
-       
+       int menu1;
        items.to_add_itemlist();
        System.out.println("Welcome to the Canteen!");
        System.out.println("Register to continue:");
