@@ -260,6 +260,7 @@ return this.password.equals(pwd) ? 1 : 0;
 abstract class MenuCard {
 String name;
 double price;
+int order_count;
 public MenuCard(String name, double price) {
 this.name = name;
 this.price = price;
