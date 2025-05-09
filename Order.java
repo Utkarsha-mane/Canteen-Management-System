@@ -46,7 +46,7 @@ public class Order {
 	 if (choice == 1) {
 	 System.out.println("1. PayTM 2. Google Pay 3. Phone Pay");
 	 input.nextInt();
-	 System.out.print("Enter your pin to confirm payment: ");
+	 System.out.print("Enter your account pin to confirm payment: ");
 	 int pin = input.nextInt();
 	 if (pin == R.getPin()) {
 	 System.out.println("Processing payment of ₹" + total + "...");
