@@ -1,11 +1,12 @@
-package mini;
+package canteen_management_system;
 import java.util.*;
 public class Canteen {
-public static void main(String[] args) {
+public static void main(String[] args) throws InterruptedException {
 	 Scanner input = new Scanner(System.in);
 	 MenuItems m = new MenuItems();
 ArrayList<MenuCard> mList = new ArrayList<MenuCard>();
 ArrayList<Staff> staff_list = new ArrayList<Staff>();
+DishOfTheWeek d=new DishOfTheWeek();
 Staff admin = new Staff("admin.cumminscanteen.in" , "admin123");
 	Scanner Sc = new Scanner(System.in);
 	char Logout='N', cont;
@@ -54,7 +55,7 @@ order.menu = mList;
 Recommendations pd = new Recommendations();
 Feedback fd = new Feedback();
 int choice;
-System.out.println("Enter your choice\n1.Menucard\n2.Popular Dishes");
+System.out.println("Enter your choice\n1.Menucard\n2.Popular Dishes\n3.Feedback\n4.Dish of the week");
 choice = input.nextInt();
 switch(choice)
 {
@@ -69,6 +70,10 @@ break;
 case 3 :
 	fd.feedback();
 	break;
+case 4:
+	d.Timer();	
+	break;
+		
 default:
 System.out.println("Invalid choice!");
 }
