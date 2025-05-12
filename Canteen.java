@@ -56,36 +56,40 @@ System.out.println("Welcome to the Canteen!");
 				Random_dish Rd = new Random_dish();
 				Prize_coupons pc = new Prize_coupons(R);
 				int choice;
-				System.out.println(
-						"Enter your choice\n1. Menucard\n2. Offers\n 3. Popular Dishes\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
-				choice = input.nextInt();
-				switch (choice) {
-					case 1:
-						order.takeOrder();
-						order.finalBill();
-						break;
-					case 2:
-						// offers
-						break;
-					case 3:
-						// popular dishes
-						break;
-					case 4:
-						pd.get_recommendations(R);
-						break;
-					case 5:
-						Rd.random_dish();
-						break;
-					case 6:
-						pc.redeem_points();
-						break;
-					case 7:
-						fd.feedback();
-						break;
-					default:
-						System.out.println("Invalid choice!");
+				String continue_ = "yes";
+				do
+				{
+					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n 3. Popular Dishes\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
+					choice = input.nextInt();
+					switch (choice) {
+						case 1:
+							order.takeOrder();
+							break;
+						case 2: 
+							// offers
+							break;
+						case 3:
+							// popular dishes
+							break;
+						case 4:
+							pd.get_recommendations(R);
+							break;
+						case 5:
+							Rd.random_dish();
+							break;
+						case 6:
+							pc.redeem_points();
+							break;
+						case 7:
+							fd.feedback();
+							break;
+						default:
+							System.out.println("Invalid choice!");
+					}
+				}while(continue_.toLowerCase().equals("yes"));
 }
 }
+	input.close();
 }
 }
 //class Register 
