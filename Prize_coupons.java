@@ -1,10 +1,10 @@
 package mini;
 
-class Prize_coupons {
+class Prize_coupons extends DishOfTheWeek{
 	Profile user;
 	Recommendations R_free = new Recommendations();
 	Order O_free = new Order();
-	Popular_dishes P_free = new Popular_dishes();
+	DishOfTheWeek P_free = new DishOfTheWeek();
 	Random_dish S_free = new Random_dish();
 	Scanner sc = new Scanner(System.in);
 	String continue_, recom;
@@ -33,8 +33,7 @@ class Prize_coupons {
 					R_free.get_recommendations(user);
 					break;
 				case 2:
-					P_free.get_popular_dishes();
-					P_free.select_popular_dish();
+                                        P_free.Timer();
 					break;
 				case 3:
 					S_free.random_dish();
