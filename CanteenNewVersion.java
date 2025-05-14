@@ -437,7 +437,7 @@ class RegisterOrLogin {
 		do {
 			System.out.println("1. Register\n2. Login");
 			menu = Sc.nextInt();
-			Sc.nextLine(); // Clear input buffer
+			Sc.nextLine(); 
 			switch (menu) {
 				case 1:
 					System.out.println("Enter email ID: ");
