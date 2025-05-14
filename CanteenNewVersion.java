@@ -1,3 +1,4 @@
+
 package fin;
 
 import java.util.*;
@@ -216,30 +217,31 @@ class Profile
 		String name = input.next();
 		System.out.println("Enter Email:");
 		String email = input.next();
-
-		// Check if already exists
-		for (Profile p : customerList) {
-			if (p.email.equalsIgnoreCase(email)) {
-				System.out.println("Email already registered! Try logging in.");
-				return null;
-			}
-		}
-
 		System.out.println("Create Password:");
 		String password = input.next();
-		try {
-		System.out.println("Create a 4-digit PIN:");
-		int pin = input.nextInt();
+
+		int pin;
+		while (true) {
+		    try {
+		        System.out.println("Create a 4-digit PIN:");
+		        pin = input.nextInt();
+		        if (String.valueOf(pin).length() != 4) {
+		            throw new InvalidPinException("PIN must be exactly 4 digits.");
+		        }
+		        break;
+		    } catch (InputMismatchException e) {
+		        System.out.println("Please enter numeric value.");
+		        input.nextLine(); 
+		    } catch (InvalidPinException e) {
+		        System.out.println(e.getMessage());
+		    }
 		}
-		catch(InputMismatchException e)
-		{
-			System.out.println("Please enter numerical value");
-			input.nextLine();
-			}
-		Profile newProfile = new Profile(name, email, password, getPin());
+
+		Profile newProfile = new Profile(name, email, password, pin);
 		customerList.add(newProfile);
 		System.out.println("Registration successful!");
 		return newProfile;
+
 	}
 
 	// Login
@@ -263,10 +265,11 @@ class Profile
 	        System.out.println(e.getMessage());
 	    } catch (InputMismatchException e) {
 	        System.out.println("Invalid input. Please enter numeric pin.");
-	        input.nextLine();
+	        input.nextLine(); 
 	    }
 	    return null;
 	}
+
 
 	
 	// Logout 
@@ -413,7 +416,7 @@ class RegisterOrLogin {
 		do {
 			System.out.println("1. Register\n2. Login");
 			menu = Sc.nextInt();
-			Sc.nextLine(); // Clear input buffer
+			Sc.nextLine(); 
 			switch (menu) {
 				case 1:
 					System.out.println("Enter email ID: ");
@@ -883,4 +886,13 @@ class DishOfTheWeek extends MenuItems {
     }
 
     }
-
+class InvalidCredentialsException extends Exception {
+    public InvalidCredentialsException(String message) {
+        super(message);
+    }
+}
+class InvalidPinException extends Exception {
+    public InvalidPinException(String message) {
+        super(message);
+    }
+}
