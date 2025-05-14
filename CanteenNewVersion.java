@@ -892,7 +892,7 @@ class DishOfTheWeek extends MenuItems {
 
     public void Timer(ArrayList<MenuCard> menu) throws InterruptedException {
         System.out.println("\nChecking for the most trending dish of the week...");
-        for (int i = 3; i > 0; i--) {
+        for (int i = 5; i > 0; i--) {
             System.out.print(i + " ");
             Thread.sleep(700);
         }
