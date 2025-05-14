@@ -7,21 +7,20 @@ public class Canteen {
 		Scanner input = new Scanner(System.in);
 		
 		// Object creation for all used classes
-		MenuItems m = new MenuItems();
-		Profile R = new Profile();
-		Order order = new Order(R);
-		Recommendations pd = new Recommendations();
-		Feedback fd = new Feedback();
-		Prize_coupons pc = new Prize_coupons(R);
-		
-		DishOfTheWeek dw = new DishOfTheWeek();
-		Staff admin = new Staff("admin.cumminscanteen.in", "admin123");
+		MenuItems m = new MenuItems(); // Manages items
+		Profile R = new Profile(); //Manages login, registration 
+		Order order = new Order(R); // Creates orders for customers 
+		Recommendations pd = new Recommendations();//Manages dish recommendations
+		Feedback fd = new Feedback();//feedback collection
+		Prize_coupons pc = new Prize_coupons(R);//coupon/reward system
+		DishOfTheWeek dw = new DishOfTheWeek();//selecting the dish of the week
+		Staff admin = new Staff("admin.cumminscanteen.in", "admin123");//Creates an admin profile for staff
 		
 		// All required ArrayLists 
-		ArrayList<MenuCard> mList = new ArrayList<MenuCard>();      // For dishes
+		ArrayList<MenuCard> mList = new ArrayList<MenuCard>(); //dishes
 		Random_dish Rd = new Random_dish(R, mList);
-		ArrayList<Staff> staff_list = new ArrayList<Staff>();       // For staff members
-		ArrayList<Profile> customer = new ArrayList<>();            // For customers
+		ArrayList<Staff> staff_list = new ArrayList<Staff>(); // staff members
+		ArrayList<Profile> customer = new ArrayList<>(); // customers
 		
 		int choice, Menu = 0, Staffmenu = 0;
 		String continue_ = "yes";
@@ -34,7 +33,15 @@ public class Canteen {
 		do {
 			System.out.println("Welcome to the Canteen!");
 			System.out.println("1. For staff\n2. For customers\n3. Explore");
+			try {
 			Menu = input.nextInt();
+			}
+			catch(InputMismatchException e)
+			{
+				System.out.println("Select the options given in the menu!");
+				input.nextLine();
+
+			}
 			switch (Menu) {
 			case 1:
 				// For Staff (Canteen authorities)
@@ -43,21 +50,21 @@ public class Canteen {
 					boolean Access = RegisterOrLogin.access(staff_list);
 					if (Access) {
 						do {
-							System.out.println("1. View reports\n2. View feedback\n3. Logout\n4.set recommendations");
+							System.out.println("1. View feedback\n2. set recommendations\n3.Logout");
 							Staffmenu = input.nextInt();
 							switch (Staffmenu) {
+								
 								case 1:
-									// Reports code
-									break;
-								case 2:
 									Staff.showFeedback();
+									break;
+								case 2 :
+									St.set_recommendations(mList);
 									break;
 								case 3:
 									Logout = input.next().charAt(0);
 									input.nextLine();
 									break;
-								case 4 :
-									St.set_recommendations(mList);
+								
 									
 							}
 							System.out.println("View options menu? (Y/N)");
