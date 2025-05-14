@@ -440,7 +440,6 @@ class RegisterOrLogin {
 	}
 }
 
-//Idhar interface dikha skte hai kya for staff methods
 class Staff {
 	String email_id;
 	private String password;
@@ -461,18 +460,21 @@ class Staff {
 		fdlist.add(f);
 	}
 	
+	
 	public static void showFeedback() {
-		for(Feedback f : fdlist) {
-			System.out.println("Food quality: " + f.foodquality);
-			System.out.println("Service: " + f.service);
-			System.out.println("Choices: " + f.choice);
-			if(f.choice != 1) {
-				System.out.println("Menu suggestions: " + f.add);
+		if (fdlist.isEmpty()) {
+			System.out.println("No feedback available.");
+		} else {
+			for (Feedback f : fdlist) {
+				System.out.println("-----------");
+				System.out.println("Food quality: " + f.foodquality);
+				System.out.println("Cleanliness: " + f.cleanliness);
+				System.out.println("Service: " + f.service);
+				System.out.println("Overall experience: " + f.experience);
 			}
-			System.out.println("Text feedback: " + f.Text_feedback);
-			System.out.println("----------------------------------");
 		}
 	}
+
 }
 
 
@@ -702,37 +704,23 @@ class Recommendations {
 }
 
 class Feedback {
-	String add, Text_feedback;
-	int choice;
-	int foodquality, service;
 	
-	public void feedback() {
 		Scanner input = new Scanner(System.in);
-		System.out.println("Thanks for taking out your time");
-		System.out.println("Are the options sufficient?\n1. Yes\n2. No");
-		choice = input.nextInt();
-		input.nextLine();
+		String foodquality, cleanliness, service, experience;
 
-		if (choice == 2) {
-
-			System.out.println("What would you like to add?");
-			add = input.nextLine();
+		public void feedback() {
+			System.out.println("Rate Food Quality (Good/Average/Poor): ");
+			foodquality = input.nextLine();
+			System.out.println("Rate Cleanliness (Good/Average/Poor): ");
+			cleanliness = input.nextLine();
+			System.out.println("Rate Service (Good/Average/Poor): ");
+			service = input.nextLine();
+			System.out.println("How was your overall experience?: ");
+			experience = input.nextLine();
+			System.out.println("Thanks for your feedback!");
 		}
-		System.out.print("\n");
-		System.out.println("How's the food quality?\n1. Good\n2. Decent\n3. Bad");
-		foodquality = input.nextInt();
-		System.out.print("\n");
-		System.out.println("How's the service?\n1. Good\n2. Decent\n3. Bad");
-		service = input.nextInt();
-		System.out.print("\n");
-		System.out.println("Anything more you would like to share!");
-		input.nextLine();
-		Text_feedback = input.nextLine();
-		System.out.print("\n");
-		
-		input.close();
 	}
-}
+
 
 
 class Random_dish {
@@ -864,3 +852,4 @@ class DishOfTheWeek extends MenuItems {
     }
 
     }
+
