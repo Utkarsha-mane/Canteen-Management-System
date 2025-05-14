@@ -447,6 +447,7 @@ class Staff {
 
 
 abstract class MenuCard {
+	int buycount = 0;
 	String name;
 	double price;
 	int order_count;
