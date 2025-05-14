@@ -1,6 +1,4 @@
-
 package fin;
-
 import java.util.*;
 
 public class Canteen {
@@ -98,11 +96,11 @@ public class Canteen {
 					Prize_coupons userCoupons = new Prize_coupons(loggedInUser);
 					Random_dish randomDish = new Random_dish(loggedInUser, mList);
 					do {
-						System.out.println("Enter your choice:\n1. Menucard\n2. Offers\n3. Popular Dishes\n4. Get Recommendation\n5. Random Dish\n6. Redeem Dish\n7. Feedback\n8. Logout");
+						System.out.println("Enter your choice:\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. Random Dish\n6. Redeem Dish\n7. Feedback\n8. Logout");
 						choice = input.nextInt();
 						switch (choice) {
 							case 1:
-								userOrder.takeOrder(R, mList);
+								userOrder.takeOrder(loggedInUser, mList, false);
 								break;
 							case 2:
 								userOrder.comboOrder();
@@ -118,10 +116,10 @@ public class Canteen {
 								randomDish.random_dish(false);
 								break;
 							case 6:
-								userCoupons.redeem_points(R, mList, pd);
+								userCoupons.redeem_points(loggedInUser, mList, pd);
 								break;
 							case 7:
-								fd.feedback();
+								Staff.addFeedback();
 								break;
 							case 8:
 								System.out.println("Logged out successfully.");
@@ -142,11 +140,11 @@ public class Canteen {
 				System.out.println("You can pay only in cash!");
 				do
 				{
-					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Popular Dishes\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
+					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
 					choice = input.nextInt();
 					switch (choice) {
 						case 1:
-							order.takeOrder(R, mList);
+							order.takeOrder(R, mList, false);
 							break;
 						case 2: 
 							order.comboOrder();
@@ -256,7 +254,7 @@ class Profile
 	        int pin = input.nextInt();
 
 	        for (Profile p : customerList) {
-	            if (p.email.equalsIgnoreCase(email) && p.getPin() == pin) {
+	            if (p.email.equalsIgnoreCase(email) && p.getPin(p) == pin) {
 	                System.out.println("Login Successful!");
 	                return p;
 	            }
@@ -278,9 +276,9 @@ class Profile
 	
 	
 	// 
-	int getPin()
+	int getPin(Profile r)
 	{
-		return user_pin;
+		return r.user_pin;
 	}
 }
 
@@ -317,31 +315,52 @@ class Order {
 	}
 
 	// Method to take order by displaying the menucard
-	public void takeOrder(Profile R, ArrayList<MenuCard> menu) {
+	public void takeOrder(Profile R, ArrayList<MenuCard> menu, boolean isfree) {
 		char more;
-		do {
-			
-//			menu_function.to_add_itemlist(menu);
+		
+		if(isfree)
+		{
 			menu_function.showMenu(menu);
-			
 			System.out.print("Enter item number to order: ");
 			int choice = input.nextInt();
 			if (choice >= 1 && choice <= menu.size()) {
 				MenuCard selected = menu.get(choice - 1);
 				userOrders.add(selected);
-				R.user_points++;
-				System.out.println("User points = " + R.user_points);
-				menu.get(choice - 1).order_count++;
-				System.out.println("Dish count = " + selected.order_count);
-				
-				System.out.println("Added to order: " + selected.name);
-			} else {
-				System.out.println("Invalid item number.");
+				System.out.println("Enjoy your dish!");
 			}
-			System.out.print("Do you want to order more? (y/n): ");
-			more = input.next().toLowerCase().charAt(0);
-		} while (more == 'y');
-		finalBill();
+			else {
+				System.out.println("Invalid item number.");
+		}
+			
+			
+		}
+			else
+			{
+				do {
+					
+//					menu_function.to_add_itemlist(menu);
+					menu_function.showMenu(menu);
+					
+					System.out.print("Enter item number to order: ");
+					int choice = input.nextInt();
+					if (choice >= 1 && choice <= menu.size()) {
+						MenuCard selected = menu.get(choice - 1);
+						userOrders.add(selected);
+						R.user_points++;
+						System.out.println("User points = " + R.user_points);
+						menu.get(choice - 1).order_count++;
+						System.out.println("Dish count = " + selected.order_count);
+						
+						System.out.println("Added to order: " + selected.name);
+					} else {
+						System.out.println("Invalid item number.");
+					}
+					System.out.print("Do you want to order more? (y/n): ");
+					more = input.next().toLowerCase().charAt(0);
+				} while (more == 'y');
+				finalBill();
+			}
+		
 		userOrders.clear();
 	}
 
@@ -391,7 +410,7 @@ class Order {
 			input.nextInt();
 			System.out.print("Enter your pin to confirm payment: ");
 			int pin = input.nextInt();
-			if (pin == R.getPin()) {
+			if (pin == R.getPin(R)) {
 				System.out.println("Processing payment of ₹" + total + "...");
 				total = 0;
 				System.out.println("Payment Successful!");
@@ -498,17 +517,19 @@ class Staff {
 	}
 	
 	public static void showFeedback() {
-		for(Feedback f : fdlist) {
-			System.out.println("Food quality: " + f.foodquality);
-			System.out.println("Service: " + f.service);
-			System.out.println("Choices: " + f.choice);
-			if(f.choice != 1) {
-				System.out.println("Menu suggestions: " + f.add);
+		if (fdlist.isEmpty()) {
+			System.out.println("No feedback available.");
+		} else {
+			for (Feedback f : fdlist) {
+				System.out.println("-----------");
+				System.out.println("Food quality: " + f.foodquality);
+				System.out.println("Cleanliness: " + f.cleanliness);
+				System.out.println("Service: " + f.service);
+				System.out.println("Overall experience: " + f.experience);
 			}
-			System.out.println("Text feedback: " + f.Text_feedback);
-			System.out.println("----------------------------------");
 		}
 	}
+
 }
 
 
@@ -602,18 +623,25 @@ class MenuItems {
 //
 class Prize_coupons extends DishOfTheWeek{
     Profile user;
-    Recommendations R_free = new Recommendations();
     MenuItems m = new MenuItems();
     Order O_free = new Order();
-    DishOfTheWeek P_free = new DishOfTheWeek();
     Scanner sc = new Scanner(System.in);
+    ArrayList<MenuCard> free_menu = new ArrayList<MenuCard>(); 
+    Recommendations R_free = new Recommendations();
+    Random_dish Rn_free = new Random_dish(user, free_menu);
     String continue_ , recom;
     Prize_coupons(Profile user) {
         this.user = user;
     }
+    
 
-    void redeem_points(Profile R, ArrayList menu, Recommendations pd) throws InterruptedException {
-    	Random_dish S_free = new Random_dish(user, menu);
+    void redeem_points(Profile R, ArrayList<MenuCard> menu, Recommendations pd) throws InterruptedException {
+    	free_menu.add(menu.get(1));
+    	free_menu.add(menu.get(2));
+    	free_menu.add(menu.get(5));
+    	free_menu.add(menu.get(8));
+    	free_menu.add(menu.get(10));
+    	free_menu.add(menu.get(15));
         System.out.println("🎁 Reward Zone: Hello " + user.name + "!");
 
         if (R.user_points >= 3) {
@@ -621,25 +649,21 @@ class Prize_coupons extends DishOfTheWeek{
             System.out.println("✨ You can redeem a FREE dish now! 🎉");
 
             System.out.println("\nHow would you like to choose your free dish?");
-            System.out.println("1. Based on Recommendations 📊");
-            System.out.println("2. From Popular Dishes 🍽️");
-            System.out.println("3. Surprise Me! 🎲");
-            System.out.print("Enter your choice (1/2/3): ");
+            System.out.println("1. From the menu 🍽");
+            System.out.println("2. Surprise Me! 🎲");
+            System.out.print("Enter your choice (1/2): ");
             int choice = sc.nextInt();
             sc.nextLine(); // consume newline
 
             switch (choice) {
                 case 1:
-                    R_free.get_recommendations(user);
+                    O_free.takeOrder(user, free_menu, true);
                     break;
                 case 2:
-                    P_free.Timer(menu);
-                    break;
-                case 3:
-                    S_free.random_dish(true);
+                	Rn_free.random_dish(true);
                     break;
                 default:
-                    System.out.println("⚠️ Invalid choice. Please try again next time.");
+                    System.out.println("⚠ Invalid choice. Please try again next time.");
                     return;
             }
 
@@ -665,10 +689,10 @@ class Prize_coupons extends DishOfTheWeek{
             	{
             		R_free.get_recommendations(user);
             	}
-//            	else
-//            	{
-//            		O_free.takeOrder(user, mList);
-//            	}
+            	else
+            	{
+            		O_free.takeOrder(user, menu, false);
+            	}
             }
             else
             {
@@ -740,10 +764,13 @@ class Recommendations {
 	char add_dish = 'Y';
 	static ArrayList<MenuCard> popDishes = new ArrayList<>();
 	Scanner input = new Scanner(System.in);
+	int count=0;
 
 	public void set_recommendations(ArrayList<MenuCard> Dishes) {
 		for (MenuCard M : Dishes) {
+			System.out.print((count+1) + ". ");
 			M.display();
+			count++;
 		}
 
 		do {
@@ -794,36 +821,23 @@ class Recommendations {
 }
 
 class Feedback {
-	String add, Text_feedback;
-	int choice;
-	int foodquality, service;
 	
+	Scanner input = new Scanner(System.in);
+	String foodquality, cleanliness, service, experience;
+
 	public void feedback() {
-		Scanner input = new Scanner(System.in);
-		System.out.println("Thanks for taking out your time");
-		System.out.println("Are the options sufficient?\n1. Yes\n2. No");
-		choice = input.nextInt();
-		input.nextLine();
-
-		if (choice == 2) {
-
-			System.out.println("What would you like to add?");
-			add = input.nextLine();
-		}
-		System.out.print("\n");
-		System.out.println("How's the food quality?\n1. Good\n2. Decent\n3. Bad");
-		foodquality = input.nextInt();
-		System.out.print("\n");
-		System.out.println("How's the service?\n1. Good\n2. Decent\n3. Bad");
-		service = input.nextInt();
-		System.out.print("\n");
-		System.out.println("Anything more you would like to share!");
-		input.nextLine();
-		Text_feedback = input.nextLine();
-		System.out.print("\n");
-		
+		System.out.println("Rate Food Quality (Good/Average/Poor): ");
+		foodquality = input.nextLine();
+		System.out.println("Rate Cleanliness (Good/Average/Poor): ");
+		cleanliness = input.nextLine();
+		System.out.println("Rate Service (Good/Average/Poor): ");
+		service = input.nextLine();
+		System.out.println("How was your overall experience?: ");
+		experience = input.nextLine();
+		System.out.println("Thanks for your feedback!");
 	}
 }
+
 
 
 
@@ -877,11 +891,10 @@ class DishOfTheWeek extends MenuItems {
 	
 
     public void Timer(ArrayList<MenuCard> menu) throws InterruptedException {
-    	menu_function.to_add_itemlist(menu);
         System.out.println("\nChecking for the most trending dish of the week...");
-        for (int i = 5; i > 0; i--) {
+        for (int i = 3; i > 0; i--) {
             System.out.print(i + " ");
-            Thread.sleep(1000);
+            Thread.sleep(700);
         }
         System.out.println();
 
