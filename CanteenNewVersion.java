@@ -103,7 +103,7 @@ public class Canteen {
 								userOrder.takeOrder(R, mList);
 								break;
 							case 2:
-								// Offers logic
+								userOrder.comboOrder();
 								break;
 							case 3:
 //								dw.menu = mList;
@@ -147,7 +147,7 @@ public class Canteen {
 							order.takeOrder(R, mList);
 							break;
 						case 2: 
-							// offers
+							order.comboOrder();
 							break;
 						case 3:
 //							dw.menu = mList;
@@ -285,7 +285,7 @@ class Order {
 		char more;
 		do {
 			
-			menu_function.to_add_itemlist(menu);
+//			menu_function.to_add_itemlist(menu);
 			menu_function.showMenu(menu);
 			
 			System.out.print("Enter item number to order: ");
@@ -306,8 +306,36 @@ class Order {
 			more = input.next().toLowerCase().charAt(0);
 		} while (more == 'y');
 		finalBill();
+		userOrders.clear();
 	}
 
+	
+	public void comboOrder() {
+		ArrayList<MenuCard> combos = new ArrayList<>();
+		Offers off = new Offers();
+		Combos com = new Combos();
+		off.addOffers(combos);
+		com.display(combos);
+		char more;
+		do {
+		System.out.print("Enter item number to order: ");
+		int choice = input.nextInt();
+		if (choice >= 1 && choice <= combos.size()) {
+			MenuCard selected = combos.get(choice - 1);
+			userOrders.add(selected);
+			System.out.println("Added to order: " + selected.name);
+		} else {
+			System.out.println("Invalid item number.");
+		}
+		System.out.print("Do you want to order more? (y/n): ");
+		more = input.next().toLowerCase().charAt(0);
+	} while (more == 'y');
+	finalBill();
+	userOrders.clear();
+	}
+
+
+	
 	public void finalBill() {
 		System.out.println("\n----- Your Order -----");
 		for (MenuCard item : userOrders) {
@@ -316,6 +344,7 @@ class Order {
 		}
 		System.out.println("Total amount: ₹" + total);
 		payment();
+		total = 0;
 	}
 
 	public void payment() {
@@ -328,6 +357,7 @@ class Order {
 			int pin = input.nextInt();
 			if (pin == R.getPin()) {
 				System.out.println("Processing payment of ₹" + total + "...");
+				total = 0;
 				System.out.println("Payment Successful!");
 				System.out.println("Please collect your order. Thank you!");
 			} else {
@@ -447,10 +477,16 @@ class Staff {
 
 
 abstract class MenuCard {
-	int buycount = 0;
 	String name;
 	double price;
 	int order_count;
+	double savings;
+	int buycount = 0;
+
+
+    public MenuCard() {
+		
+	}
 
 	public MenuCard(String name, double price) {
 		this.name = name;
@@ -755,8 +791,42 @@ class Random_dish {
 }
 
 
-
 class Offers {
+	
+void addOffers(ArrayList<MenuCard> offers) {
+	offers.add(new Combos("South Indian Sunrise - Idli + Upma + Hot Coffee", 60, 5 ));
+	offers.add(new Combos("Mumbai Snack Box - Vada Paav + Chutney Sandwhich", 40, 5));
+	offers.add(new Combos("Summer Juices Combo - Watermelon juice + Pineapple juice", 50, 10));
+  
+}
+
+
+
+}
+
+class Combos extends MenuCard{
+	public Combos() {
+		super();
+		//Default constructor
+	}
+    public Combos(String name, double price, double savings) {
+        super(name, price);
+        this.savings = savings;
+    }
+      public void display(ArrayList<MenuCard> offers) {
+    	  int count=0;
+    	  for(MenuCard M : offers) {
+    		  System.out.println((count+1) + ". Combo | " + M.name + " - ₹" + M.price + " You save: ₹" + M.savings);
+    	        System.out.println("------------------------------------"); 
+    	        count++;
+    	  }
+       
+    }
+      
+      public void display() {
+      }
+
+    
 }
 
 class DishOfTheWeek extends MenuItems {
