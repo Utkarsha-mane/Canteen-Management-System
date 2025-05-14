@@ -1,4 +1,4 @@
-package canteen_management_system;
+package fin;
 
 import java.util.*;
 
@@ -96,7 +96,7 @@ public class Canteen {
 					Prize_coupons userCoupons = new Prize_coupons(loggedInUser);
 					Random_dish randomDish = new Random_dish(loggedInUser, mList);
 					do {
-						System.out.println("Enter your choice:\n1. Menucard\n2. Offers\n3. Popular Dishes\n4. Get Recommendation\n5. Random Dish\n6. Redeem Dish\n7. Feedback\n8. Logout");
+						System.out.println("Enter your choice:\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. Random Dish\n6. Redeem Dish\n7. Feedback\n8. Logout");
 						choice = input.nextInt();
 						switch (choice) {
 							case 1:
@@ -140,7 +140,7 @@ public class Canteen {
 				System.out.println("You can pay only in cash!");
 				do
 				{
-					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Popular Dishes\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
+					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
 					choice = input.nextInt();
 					switch (choice) {
 						case 1:
@@ -220,10 +220,16 @@ class Profile
 
 		System.out.println("Create Password:");
 		String password = input.next();
+		try {
 		System.out.println("Create a 4-digit PIN:");
 		int pin = input.nextInt();
-
-		Profile newProfile = new Profile(name, email, password, pin);
+		}
+		catch(InputMismatchException e)
+		{
+			System.out.println("Please enter numerical value");
+			input.nextLine();
+			}
+		Profile newProfile = new Profile(name, email, password, getPin());
 		customerList.add(newProfile);
 		System.out.println("Registration successful!");
 		return newProfile;
@@ -231,20 +237,30 @@ class Profile
 
 	// Login
 	public Profile login(ArrayList<Profile> customerList, Scanner input) {
-		System.out.println("Enter Email:");
-		String email = input.next();
-		System.out.println("Enter Password:");
-		String password = input.next();
+	    try {
+	        System.out.print("Enter Email: ");
+	        String email = input.next();
+	        System.out.print("Enter Pin: ");
+	        int pin = input.nextInt();
 
-		for (Profile p : customerList) {
-			if (p.email.equalsIgnoreCase(email) && p.password.equals(password)) {
-				System.out.println("Login successful! Welcome " + p.name);
-				return p;
-			}
-		}
-		System.out.println("Invalid credentials!");
-		return null;
+	        for (Profile p : customerList) {
+	            if (p.email.equalsIgnoreCase(email) && p.getPin() == pin) {
+	                System.out.println("Login Successful!");
+	                return p;
+	            }
+	        }
+
+	        throw new InvalidCredentialsException("Invalid email or pin. Please try again.");
+
+	    } catch (InvalidCredentialsException e) {
+	        System.out.println(e.getMessage());
+	    } catch (InputMismatchException e) {
+	        System.out.println("Invalid input. Please enter numeric pin.");
+	        input.nextLine();
+	    }
+	    return null;
 	}
+
 	
 	// Logout 
 	
@@ -287,7 +303,8 @@ class Order {
 			
 //			menu_function.to_add_itemlist(menu);
 			menu_function.showMenu(menu);
-			
+			try {
+
 			System.out.print("Enter item number to order: ");
 			int choice = input.nextInt();
 			if (choice >= 1 && choice <= menu.size()) {
@@ -302,6 +319,13 @@ class Order {
 			} else {
 				System.out.println("Invalid item number.");
 			}
+			} catch (InputMismatchException e) {
+			    System.out.println("Please enter a valid number.");
+			    input.nextLine();
+			} catch (IndexOutOfBoundsException e) {
+			    System.out.println("Invalid choice. Please try again.");
+			}
+
 			System.out.print("Do you want to order more? (y/n): ");
 			more = input.next().toLowerCase().charAt(0);
 		} while (more == 'y');
@@ -588,7 +612,7 @@ class Prize_coupons extends DishOfTheWeek{
 
             System.out.println("\nHow would you like to choose your free dish?");
             System.out.println("1. Based on Recommendations 📊");
-            System.out.println("2. From Popular Dishes 🍽️");
+            System.out.println("2. From Dish of the week 🍽️");
             System.out.println("3. Surprise Me! 🎲");
             System.out.print("Enter your choice (1/2/3): ");
             int choice = sc.nextInt();
@@ -687,7 +711,7 @@ class Recommendations {
 			char more;
 			do {
 				display_recommendations();
-				System.out.print("Enter popular dish number to order: ");
+				System.out.print("Enter Dish of the week number to order: ");
 				int dishIndex = input.nextInt();
 				if (dishIndex >= 1 && dishIndex <= popDishes.size()) {
 					order.userOrders.add(popDishes.get(dishIndex - 1));
@@ -829,7 +853,7 @@ class DishOfTheWeek extends MenuItems {
     public void Timer(ArrayList<MenuCard> menu) throws InterruptedException {
     	menu_function.to_add_itemlist(menu);
         System.out.println("\nChecking for the most trending dish of the week...");
-        for (int i = 5; i > 0; i--) {
+        for (int i = 3; i > 0; i--) {
             System.out.print(i + " ");
             Thread.sleep(1000);
         }
