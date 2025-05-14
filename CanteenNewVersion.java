@@ -8,20 +8,21 @@ public class Canteen {
 		Scanner input = new Scanner(System.in);
 		
 		// Object creation for all used classes
-		MenuItems m = new MenuItems(); // Manages items
-		Profile R = new Profile(); //Manages login, registration 
-		Order order = new Order(R); // Creates orders for customers 
-		Recommendations pd = new Recommendations();//Manages dish recommendations
-		Feedback fd = new Feedback();//feedback collection
-		Prize_coupons pc = new Prize_coupons(R);//coupon/reward system
-		DishOfTheWeek dw = new DishOfTheWeek();//selecting the dish of the week
-		Staff admin = new Staff("admin.cumminscanteen.in", "admin123");//Creates an admin profile for staff
+		MenuItems m = new MenuItems();
+		Profile R = new Profile();
+		Order order = new Order(R);
+		Recommendations pd = new Recommendations();
+		Feedback fd = new Feedback();
+		Prize_coupons pc = new Prize_coupons(R);
+		
+		DishOfTheWeek dw = new DishOfTheWeek();
+		Staff admin = new Staff("admin.cumminscanteen.in", "admin123");
 		
 		// All required ArrayLists 
-		ArrayList<MenuCard> mList = new ArrayList<MenuCard>(); //dishes
+		ArrayList<MenuCard> mList = new ArrayList<MenuCard>();      // For dishes
 		Random_dish Rd = new Random_dish(R, mList);
-		ArrayList<Staff> staff_list = new ArrayList<Staff>(); // staff members
-		ArrayList<Profile> customer = new ArrayList<>(); // customers
+		ArrayList<Staff> staff_list = new ArrayList<Staff>();       // For staff members
+		ArrayList<Profile> customer = new ArrayList<>();            // For customers
 		
 		int choice, Menu = 0, Staffmenu = 0;
 		String continue_ = "yes";
@@ -35,14 +36,15 @@ public class Canteen {
 			System.out.println("Welcome to the Canteen!");
 			System.out.println("1. For staff\n2. For customers\n3. Explore");
 			try {
-			Menu = input.nextInt();
-			}
-			catch(InputMismatchException e)
-			{
-				System.out.println("Select the options given in the menu!");
-				input.nextLine();
+				Menu = input.nextInt();
+				}
+				catch(InputMismatchException e)
+				{
+					System.out.println("Select the options given in the menu!");
+					input.nextLine();
 
-			}
+				}
+
 			switch (Menu) {
 			case 1:
 				// For Staff (Canteen authorities)
@@ -51,32 +53,24 @@ public class Canteen {
 					boolean Access = RegisterOrLogin.access(staff_list);
 					if (Access) {
 						do {
-							System.out.println("1. View feedback\n2. set recommendations\n3.Logout");
+							System.out.println("1. View feedback\n2. Set recommendations\n3. Logout");
 							Staffmenu = input.nextInt();
 							switch (Staffmenu) {
-								
 								case 1:
 									Staff.showFeedback();
 									break;
-								case 2 :
+								case 2:
 									St.set_recommendations(mList);
 									break;
 								case 3:
-									Logout = input.next().charAt(0);
-									input.nextLine();
+									Access = false;
 									break;
-								
-									
 							}
-							System.out.println("View options menu? (Y/N)");
-							cont = input.next().charAt(0);
-						} while (cont == 'Y');
-
-					} else if (!Access) {
-
+						} while (Access == true);
 					}
 				} while (Logout == 'Y');
 				break;
+
 				
 			case 2:
 				// For Customers with set profiles (primarily for students, professors and other authorities)
@@ -104,7 +98,7 @@ public class Canteen {
 					Prize_coupons userCoupons = new Prize_coupons(loggedInUser);
 					Random_dish randomDish = new Random_dish(loggedInUser, mList);
 					do {
-						System.out.println("Enter your choice:\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. Random Dish\n6. Redeem Dish\n7. Feedback\n8. Logout");
+						System.out.println("Enter your choice:\n1. Menucard\n2. Offers\n3. Popular Dishes\n4. Get Recommendation\n5. Random Dish\n6. Redeem Dish\n7. Feedback\n8. Logout");
 						choice = input.nextInt();
 						switch (choice) {
 							case 1:
@@ -121,7 +115,7 @@ public class Canteen {
 								pd.get_recommendations(loggedInUser);
 								break;
 							case 5:
-								randomDish.random_dish();
+								randomDish.random_dish(false);
 								break;
 							case 6:
 								userCoupons.redeem_points(R, mList, pd);
@@ -148,7 +142,7 @@ public class Canteen {
 				System.out.println("You can pay only in cash!");
 				do
 				{
-					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
+					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Popular Dishes\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
 					choice = input.nextInt();
 					switch (choice) {
 						case 1:
@@ -165,7 +159,7 @@ public class Canteen {
 							pd.get_recommendations(R);
 							break;
 						case 5:
-							Rd.random_dish();
+							Rd.random_dish(false);
 							break;
 						case 6:
 //							pc.redeem_points();        // This feature will not work as the person doesn't have an user account
@@ -217,9 +211,18 @@ class Profile
 		String name = input.next();
 		System.out.println("Enter Email:");
 		String email = input.next();
+
+		// Check if already exists
+		for (Profile p : customerList) {
+			if (p.email.equalsIgnoreCase(email)) {
+				System.out.println("Email already registered! Try logging in.");
+				return null;
+			}
+		}
+
 		System.out.println("Create Password:");
 		String password = input.next();
-
+		
 		int pin;
 		while (true) {
 		    try {
@@ -241,8 +244,8 @@ class Profile
 		customerList.add(newProfile);
 		System.out.println("Registration successful!");
 		return newProfile;
-
 	}
+
 
 	// Login
 	public Profile login(ArrayList<Profile> customerList, Scanner input) {
@@ -265,11 +268,10 @@ class Profile
 	        System.out.println(e.getMessage());
 	    } catch (InputMismatchException e) {
 	        System.out.println("Invalid input. Please enter numeric pin.");
-	        input.nextLine(); 
+	        input.nextLine();
 	    }
 	    return null;
 	}
-
 
 	
 	// Logout 
@@ -279,6 +281,14 @@ class Profile
 	int getPin()
 	{
 		return user_pin;
+	}
+}
+
+class InvalidCredentialsException extends Exception
+{
+	public InvalidCredentialsException(String message)
+	{
+		super(message);
 	}
 }
 
@@ -313,8 +323,7 @@ class Order {
 			
 //			menu_function.to_add_itemlist(menu);
 			menu_function.showMenu(menu);
-			try {
-
+			
 			System.out.print("Enter item number to order: ");
 			int choice = input.nextInt();
 			if (choice >= 1 && choice <= menu.size()) {
@@ -329,13 +338,6 @@ class Order {
 			} else {
 				System.out.println("Invalid item number.");
 			}
-			} catch (InputMismatchException e) {
-			    System.out.println("Please enter a valid number.");
-			    input.nextLine();
-			} catch (IndexOutOfBoundsException e) {
-			    System.out.println("Invalid choice. Please try again.");
-			}
-
 			System.out.print("Do you want to order more? (y/n): ");
 			more = input.next().toLowerCase().charAt(0);
 		} while (more == 'y');
@@ -416,7 +418,7 @@ class RegisterOrLogin {
 		do {
 			System.out.println("1. Register\n2. Login");
 			menu = Sc.nextInt();
-			Sc.nextLine(); 
+			Sc.nextLine(); // Clear input buffer
 			switch (menu) {
 				case 1:
 					System.out.println("Enter email ID: ");
@@ -474,6 +476,7 @@ class RegisterOrLogin {
 	}
 }
 
+//Idhar interface dikha skte hai kya for staff methods
 class Staff {
 	String email_id;
 	private String password;
@@ -494,21 +497,18 @@ class Staff {
 		fdlist.add(f);
 	}
 	
-	
 	public static void showFeedback() {
-		if (fdlist.isEmpty()) {
-			System.out.println("No feedback available.");
-		} else {
-			for (Feedback f : fdlist) {
-				System.out.println("-----------");
-				System.out.println("Food quality: " + f.foodquality);
-				System.out.println("Cleanliness: " + f.cleanliness);
-				System.out.println("Service: " + f.service);
-				System.out.println("Overall experience: " + f.experience);
+		for(Feedback f : fdlist) {
+			System.out.println("Food quality: " + f.foodquality);
+			System.out.println("Service: " + f.service);
+			System.out.println("Choices: " + f.choice);
+			if(f.choice != 1) {
+				System.out.println("Menu suggestions: " + f.add);
 			}
+			System.out.println("Text feedback: " + f.Text_feedback);
+			System.out.println("----------------------------------");
 		}
 	}
-
 }
 
 
@@ -617,12 +617,12 @@ class Prize_coupons extends DishOfTheWeek{
         System.out.println("🎁 Reward Zone: Hello " + user.name + "!");
 
         if (R.user_points >= 3) {
-            System.out.println("You currently have " + user.user_points + " reward points!");
+            System.out.println("You currently have " + R.user_points + " reward points!");
             System.out.println("✨ You can redeem a FREE dish now! 🎉");
 
             System.out.println("\nHow would you like to choose your free dish?");
             System.out.println("1. Based on Recommendations 📊");
-            System.out.println("2. From Dish of the week 🍽️");
+            System.out.println("2. From Popular Dishes 🍽️");
             System.out.println("3. Surprise Me! 🎲");
             System.out.print("Enter your choice (1/2/3): ");
             int choice = sc.nextInt();
@@ -636,7 +636,7 @@ class Prize_coupons extends DishOfTheWeek{
                     P_free.Timer(menu);
                     break;
                 case 3:
-                    S_free.random_dish();
+                    S_free.random_dish(true);
                     break;
                 default:
                     System.out.println("⚠️ Invalid choice. Please try again next time.");
@@ -676,6 +676,62 @@ class Prize_coupons extends DishOfTheWeek{
             }
         }
         System.out.println();
+    }
+}
+
+class Random_dish {
+    Scanner input = new Scanner(System.in);
+    Random rand = new Random();
+    Profile R;
+    int order_or_not;
+    Order Order_random;
+    ArrayList<MenuCard> mList;
+
+    // Constructor to pass Profile and Menu list
+    Random_dish(Profile R, ArrayList<MenuCard> menuList) {
+        this.R = R;
+        this.Order_random = new Order(R);
+        this.mList = menuList;
+    }
+
+    void Timer() {
+        System.out.print("Choosing your surprise dish");
+        try {
+            for (int i = 0; i < 3; i++) {
+                Thread.sleep(700);
+                System.out.print(" ...");
+            }
+            System.out.println();
+        } catch (InterruptedException e) {
+            System.out.println("Oops! Something went wrong during the timer");
+        }
+    }
+
+    void random_dish(boolean isfree) {
+        if (mList == null || mList.isEmpty()) {
+            System.out.println("* No items available to select a surprise dish!");
+            return;
+        }
+
+        Timer();
+
+        int randomIndex = rand.nextInt(mList.size());
+        MenuCard surpriseDish = mList.get(randomIndex);
+
+        System.out.println("\n🎁 Surprise Dish Just for You");
+        System.out.println("👉 " + surpriseDish.name + " - ₹" + surpriseDish.price);
+        System.out.println("😋 Enjoy the food vibes!");
+        System.out.print("Would you like to order this dish? Enter 1 for YES: ");
+
+        order_or_not = input.nextInt();
+        if (order_or_not == 1) {
+            Order_random.userOrders.add(surpriseDish);
+            System.out.println("✅ Dish added to your order! Finalizing bill...");
+            if(!isfree)
+            Order_random.finalBill();
+        } else {
+            System.out.println("No worries! Maybe next time. 😊");
+        }
     }
 }
 
@@ -721,7 +777,7 @@ class Recommendations {
 			char more;
 			do {
 				display_recommendations();
-				System.out.print("Enter Dish of the week number to order: ");
+				System.out.print("Enter popular dish number to order: ");
 				int dishIndex = input.nextInt();
 				if (dishIndex >= 1 && dishIndex <= popDishes.size()) {
 					order.userOrders.add(popDishes.get(dishIndex - 1));
@@ -738,79 +794,39 @@ class Recommendations {
 }
 
 class Feedback {
+	String add, Text_feedback;
+	int choice;
+	int foodquality, service;
 	
+	public void feedback() {
 		Scanner input = new Scanner(System.in);
-		String foodquality, cleanliness, service, experience;
+		System.out.println("Thanks for taking out your time");
+		System.out.println("Are the options sufficient?\n1. Yes\n2. No");
+		choice = input.nextInt();
+		input.nextLine();
 
-		public void feedback() {
-			System.out.println("Rate Food Quality (Good/Average/Poor): ");
-			foodquality = input.nextLine();
-			System.out.println("Rate Cleanliness (Good/Average/Poor): ");
-			cleanliness = input.nextLine();
-			System.out.println("Rate Service (Good/Average/Poor): ");
-			service = input.nextLine();
-			System.out.println("How was your overall experience?: ");
-			experience = input.nextLine();
-			System.out.println("Thanks for your feedback!");
+		if (choice == 2) {
+
+			System.out.println("What would you like to add?");
+			add = input.nextLine();
 		}
+		System.out.print("\n");
+		System.out.println("How's the food quality?\n1. Good\n2. Decent\n3. Bad");
+		foodquality = input.nextInt();
+		System.out.print("\n");
+		System.out.println("How's the service?\n1. Good\n2. Decent\n3. Bad");
+		service = input.nextInt();
+		System.out.print("\n");
+		System.out.println("Anything more you would like to share!");
+		input.nextLine();
+		Text_feedback = input.nextLine();
+		System.out.print("\n");
+		
 	}
-
-
-
-class Random_dish {
-    Scanner input = new Scanner(System.in);
-    Random rand = new Random();
-    Profile R;
-    int order_or_not;
-    Order Order_random;
-    ArrayList<MenuCard> mList;
-
-    // Constructor to pass Profile and Menu list
-    Random_dish(Profile R, ArrayList<MenuCard> menuList) {
-        this.R = R;
-        this.Order_random = new Order(R);
-        this.mList = menuList;
-    }
-
-    void Timer() {
-        System.out.print("Choosing your surprise dish");
-        try {
-            for (int i = 0; i < 3; i++) {
-                Thread.sleep(700);
-                System.out.print(" ...");
-            }
-            System.out.println();
-        } catch (InterruptedException e) {
-            System.out.println("Oops! Something went wrong during the timer");
-        }
-    }
-
-    void random_dish() {
-        if (mList == null || mList.isEmpty()) {
-            System.out.println("* No items available to select a surprise dish!");
-            return;
-        }
-
-        Timer();
-
-        int randomIndex = rand.nextInt(mList.size());
-        MenuCard surpriseDish = mList.get(randomIndex);
-
-        System.out.println("\n🎁 Surprise Dish Just for You");
-        System.out.println("👉 " + surpriseDish.name + " - ₹" + surpriseDish.price);
-        System.out.println("😋 Enjoy the food vibes!");
-        System.out.print("Would you like to order this dish? Enter 1 for YES: ");
-
-        order_or_not = input.nextInt();
-        if (order_or_not == 1) {
-            Order_random.userOrders.add(surpriseDish);
-            System.out.println("✅ Dish added to your order! Finalizing bill...");
-            Order_random.finalBill();
-        } else {
-            System.out.println("No worries! Maybe next time. 😊");
-        }
-    }
 }
+
+
+
 
 
 class Offers {
@@ -863,7 +879,7 @@ class DishOfTheWeek extends MenuItems {
     public void Timer(ArrayList<MenuCard> menu) throws InterruptedException {
     	menu_function.to_add_itemlist(menu);
         System.out.println("\nChecking for the most trending dish of the week...");
-        for (int i = 3; i > 0; i--) {
+        for (int i = 5; i > 0; i--) {
             System.out.print(i + " ");
             Thread.sleep(1000);
         }
@@ -886,13 +902,9 @@ class DishOfTheWeek extends MenuItems {
     }
 
     }
-class InvalidCredentialsException extends Exception {
-    public InvalidCredentialsException(String message) {
-        super(message);
-    }
-}
+
 class InvalidPinException extends Exception {
-    public InvalidPinException(String message) {
-        super(message);
-    }
+	public InvalidPinException(String message) {
+    	super(message);
+	}
 }
