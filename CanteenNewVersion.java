@@ -34,7 +34,7 @@ public class Canteen {
 			try {
 				Menu = input.nextInt();
 				}
-				catch(InputMismatchException e)
+				catch(InputMismatchException e) //Exception for invalid input entered
 				{
 					System.out.println("Select the options given in the menu!");
 					input.nextLine();
@@ -175,6 +175,9 @@ public class Canteen {
 					System.out.println("Show menu?(yes/no)");
 					continue_ = input.next();
 				}while(continue_.toLowerCase().equals("yes"));
+				break;
+			default:
+				System.out.println("Please enter valid option.");
 				break;
 		}
 			System.out.println("Continue? (Y/N)");
@@ -563,7 +566,7 @@ abstract class MenuCard {
 
 
     public MenuCard() {
-		//Default constructor
+		//Default constructor. Used in overloading
 	}
 
 	public MenuCard(String name, double price) {
