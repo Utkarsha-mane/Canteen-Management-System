@@ -49,7 +49,7 @@ public class Canteen {
 					boolean Access = RegisterOrLogin.access(staff_list);
 					if (Access) {
 						do {
-							System.out.println("1. View feedback\n2. Set recommendations\n3. Logout");
+							System.out.println("1. View feedback\n2. Set recommendations\n3. Remove recommendations\n4. Logout");
 							Staffmenu = input.nextInt();
 							switch (Staffmenu) {
 								case 1:
@@ -59,6 +59,9 @@ public class Canteen {
 									St.set_recommendations(mList);
 									break;
 								case 3:
+									St.remove_recommendations();
+									break;
+								case 4:
 									Access = false;
 									break;
 							}
@@ -510,7 +513,6 @@ class RegisterOrLogin {
 	}
 }
 
-//Idhar interface dikha skte hai kya for staff methods
 class Staff {
 	String email_id;
 	private String password;
@@ -793,9 +795,10 @@ class Recommendations {
 	char add_dish = 'Y';
 	static ArrayList<MenuCard> popDishes = new ArrayList<>();
 	Scanner input = new Scanner(System.in);
-	int count=0;
+	
 
 	public void set_recommendations(ArrayList<MenuCard> Dishes) {
+		int count=0;
 		for (MenuCard M : Dishes) {
 			System.out.print((count+1) + ". ");
 			M.display();
@@ -815,6 +818,29 @@ class Recommendations {
 		} while (add_dish == 'Y');
 
 	}
+	
+	public void remove_recommendations() {
+		int count1=0;
+		for (MenuCard M : popDishes) {
+			System.out.print((count1+1) + ". ");
+			M.display();
+			count1++;
+		}
+
+		do {
+			System.out.println("Enter the index numbers of the Recommendations:");
+			int index = input.nextInt();
+			if (index >= 1 && index <= popDishes.size()) {
+				popDishes.remove(popDishes.get(index - 1));
+			} else {
+				System.out.println("Invalid index! Skipping.");
+			}
+			System.out.println("Continue removing recommendations? (Y/N)");
+			add_dish = input.next().charAt(0);
+		} while (add_dish == 'Y');
+
+	}
+	
 
 	public void display_recommendations() {
 		System.out.println("\n--- Recommendations ---");
