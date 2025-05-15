@@ -1,4 +1,4 @@
-package fin;
+package canteen_management_system;
 import java.util.*;
 
 public class Canteen {
@@ -140,7 +140,7 @@ public class Canteen {
 				System.out.println("You can pay only in cash!");
 				do
 				{
-					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback");
+					System.out.println("Enter your choice\n1. Menucard\n2. Offers\n3. Dish of the week\n4. Get Recommendation\n5. I'm so confused..Get me a random dish\n6. Redeem free dish\n7. Feedback\n8. Back");
 					choice = input.nextInt();
 					switch (choice) {
 						case 1:
@@ -165,6 +165,8 @@ public class Canteen {
 							break;
 						case 7:
 							Staff.addFeedback();
+							break;
+						case 8:
 							break;
 						default:
 							System.out.println("Invalid choice!");
@@ -403,26 +405,41 @@ class Order {
 	}
 
 	public void payment() {
-		System.out.println("\nChoose payment method: 1. UPI 2. Card 3. Cash");
-		int choice = input.nextInt();
-		if (choice == 1) {
-			System.out.println("1. PayTM 2. Google Pay 3. Phone Pay");
-			input.nextInt();
-			System.out.print("Enter your pin to confirm payment: ");
-			int pin = input.nextInt();
-			if (pin == R.getPin(R)) {
-				System.out.println("Processing payment of ₹" + total + "...");
-				total = 0;
-				System.out.println("Payment Successful!");
-				System.out.println("Please collect your order. Thank you!");
-			} else {
-				System.out.println("Invalid pin! Payment failed.");
+		boolean pay_confirm = false;
+		do {
+			System.out.println("\nChoose payment method: 1. UPI 2. Card 3. Cash");
+			int choice = input.nextInt();
+			if (choice == 1) {
+				int choice2;
+				System.out.println("1. PayTM 2. Google Pay 3. Phone Pay");
+				choice2 = input.nextInt();
+				if (choice2 <= 3 && choice2 >= 1) {
+					System.out.print("Enter your pin to confirm payment: ");
+					int pin = input.nextInt();
+					if (pin == R.getPin(R)) {
+						System.out.println("Processing payment of ₹" + total + "...");
+						total = 0;
+						System.out.println("Payment Successful!");
+						System.out.println("Please collect your order. Thank you!");
+						pay_confirm = true;
+					} else {
+						System.out.println("Invalid pin! Payment failed.");
+					}
+				}
+				else {
+					System.out.println("Please enter valid index!");
+				}
 			}
-		}
 
-		else {
-			System.out.println("Please pay ₹" + total + " at the counter.");
-		}
+			else if (choice == 2 || choice == 3){
+				System.out.println("Please pay ₹" + total + " at the counter.");
+				pay_confirm = true;
+			}
+			else {
+				System.out.print("Please enter valid index!");
+			}
+		}while(pay_confirm == false);
+
 	}
 }
 
@@ -437,7 +454,7 @@ class RegisterOrLogin {
 		do {
 			System.out.println("1. Register\n2. Login");
 			menu = Sc.nextInt();
-			Sc.nextLine(); 
+			Sc.nextLine(); // Clear input buffer
 			switch (menu) {
 				case 1:
 					System.out.println("Enter email ID: ");
@@ -525,6 +542,8 @@ class Staff {
 				System.out.println("Food quality: " + f.foodquality);
 				System.out.println("Cleanliness: " + f.cleanliness);
 				System.out.println("Service: " + f.service);
+				System.out.println("Were the options sufficient: " + f.options);
+				System.out.println("Suggestion to add: " + f.foodsuggestion);
 				System.out.println("Overall experience: " + f.experience);
 			}
 		}
@@ -745,9 +764,18 @@ class Random_dish {
         System.out.println("\n🎁 Surprise Dish Just for You");
         System.out.println("👉 " + surpriseDish.name + " - ₹" + surpriseDish.price);
         System.out.println("😋 Enjoy the food vibes!");
+        
+        
         System.out.print("Would you like to order this dish? Enter 1 for YES: ");
+        try {
+            order_or_not = input.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input! Please enter an *Integer*.");
+            input.nextLine(); 
+            order_or_not = 0;
+        }
 
-        order_or_not = input.nextInt();
+        
         if (order_or_not == 1) {
             Order_random.userOrders.add(surpriseDish);
             System.out.println("✅ Dish added to your order! Finalizing bill...");
@@ -823,8 +851,8 @@ class Recommendations {
 class Feedback {
 	
 	Scanner input = new Scanner(System.in);
-	String foodquality, cleanliness, service, experience;
-
+	String foodquality, cleanliness, service, experience, options, foodsuggestion="None";
+	
 	public void feedback() {
 		System.out.println("Rate Food Quality (Good/Average/Poor): ");
 		foodquality = input.nextLine();
@@ -832,6 +860,12 @@ class Feedback {
 		cleanliness = input.nextLine();
 		System.out.println("Rate Service (Good/Average/Poor): ");
 		service = input.nextLine();
+		System.out.println("Were the options sufficient? (Yes/No): ");
+		options = input.nextLine();
+		if(options.equals("No")) {
+			System.out.println("What would you like to add? ");
+			foodsuggestion = input.nextLine();
+		}
 		System.out.println("How was your overall experience?: ");
 		experience = input.nextLine();
 		System.out.println("Thanks for your feedback!");
@@ -892,7 +926,7 @@ class DishOfTheWeek extends MenuItems {
 
     public void Timer(ArrayList<MenuCard> menu) throws InterruptedException {
         System.out.println("\nChecking for the most trending dish of the week...");
-        for (int i = 5; i > 0; i--) {
+        for (int i = 3; i > 0; i--) {
             System.out.print(i + " ");
             Thread.sleep(700);
         }
@@ -915,6 +949,7 @@ class DishOfTheWeek extends MenuItems {
     }
 
     }
+
 
 class InvalidPinException extends Exception {
 	public InvalidPinException(String message) {
