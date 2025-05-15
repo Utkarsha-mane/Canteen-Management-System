@@ -1,4 +1,4 @@
-package canteen_management_system;
+
 import java.util.*;
 
 public class Canteen {
@@ -538,13 +538,15 @@ class Staff {
 			System.out.println("No feedback available.");
 		} else {
 			for (Feedback f : fdlist) {
-				System.out.println("-----------");
+				System.out.println("---------------------------------");
 				System.out.println("Food quality: " + f.foodquality);
 				System.out.println("Cleanliness: " + f.cleanliness);
 				System.out.println("Service: " + f.service);
 				System.out.println("Were the options sufficient: " + f.options);
 				System.out.println("Suggestion to add: " + f.foodsuggestion);
 				System.out.println("Overall experience: " + f.experience);
+				System.out.println("---------------------------------\n");
+
 			}
 		}
 	}
