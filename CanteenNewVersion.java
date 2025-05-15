@@ -1,34 +1,32 @@
-
+package canteen_management_system;
 import java.util.*;
 
 public class Canteen {
 	public static void main(String[] args) throws InterruptedException {
 		Scanner input = new Scanner(System.in);
 		
+		// All required ArrayLists 
+		ArrayList<MenuCard> mList = new ArrayList<MenuCard>();      // For dishes
+		ArrayList<Staff> staff_list = new ArrayList<Staff>();       // For staff members
+		ArrayList<Profile> customer = new ArrayList<>(); 
+				
 		// Object creation for all used classes
-		MenuItems m = new MenuItems();
-		Profile R = new Profile();
-		Order order = new Order(R);
+		MenuItems m = new MenuItems(); //Used for displaying and adding items to menu
+		Profile R = new Profile(); 
+		Order order = new Order(R); 
 		Recommendations pd = new Recommendations();
 		Feedback fd = new Feedback();
 		Prize_coupons pc = new Prize_coupons(R);
-		
 		DishOfTheWeek dw = new DishOfTheWeek();
-		Staff admin = new Staff("admin.cumminscanteen.in", "admin123");
-		
-		// All required ArrayLists 
-		ArrayList<MenuCard> mList = new ArrayList<MenuCard>();      // For dishes
+		Staff admin = new Staff("admin.cumminscanteen.in", "admin123"); //To prevent out of bounds exception
 		Random_dish Rd = new Random_dish(R, mList);
-		ArrayList<Staff> staff_list = new ArrayList<Staff>();       // For staff members
-		ArrayList<Profile> customer = new ArrayList<>();            // For customers
 		
+		//Required variable declaration
 		int choice, Menu = 0, Staffmenu = 0;
 		String continue_ = "yes";
 		char Logout = 'N', cont, cont2;
 		
-		// Method call to add elements to the ArrayList mList(dishes)
-		m.to_add_itemlist(mList);
-		
+		m.to_add_itemlist(mList); // Method call to add elements to the ArrayList mList(dishes)
 		// Main menu
 		do {
 			System.out.println("Welcome to the Canteen!");
@@ -563,7 +561,7 @@ abstract class MenuCard {
 
 
     public MenuCard() {
-		
+		//Default constructor
 	}
 
 	public MenuCard(String name, double price) {
@@ -702,10 +700,11 @@ class Prize_coupons extends DishOfTheWeek{
             System.out.println("Tip: Order more dishes to earn rewards faster!");
             System.out.println("Would you like to order ?(yes/no)");
             continue_ = sc.nextLine();
-            System.out.println("Do you need any recommendations?");
-            recom = sc.nextLine();
+           
             if(continue_.toLowerCase().equals("yes"))
             {
+            	 System.out.println("Do you need any recommendations?");
+                 recom = sc.nextLine();
             	if(recom.toLowerCase().equals("yes"))
             	{
             		R_free.get_recommendations(user);
@@ -912,6 +911,8 @@ class Combos extends MenuCard{
     }
       
       public void display() {
+    	  System.out.println("Combo | " + name + " - ₹" + price + " Amount saved: ₹" + savings);
+  		System.out.println("------------------------------------");
       }
 
     
